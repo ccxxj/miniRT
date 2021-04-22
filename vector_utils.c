@@ -6,7 +6,7 @@
 /*   By: Xiaojing <Xiaojing@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/15 13:44:36 by Xiaojing      #+#    #+#                 */
-/*   Updated: 2021/04/15 17:43:27 by Xiaojing      ########   odam.nl         */
+/*   Updated: 2021/04/22 17:13:59 by xxu           ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,4 +53,12 @@ double	dot_product(double a[3], double b[3])
 
 	result = a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
 	return (result);
+}
+
+double	*cross_product(double a[3], double b[3], double c[3])
+{
+	c[0] = a[1] * b[2] - a[2] * b[1];
+	c[1] = a[2] * b[0] - a[0] * b[2];
+	c[2] = a[0] * b[1] - a[1] * b[0];
+	return (c);
 }

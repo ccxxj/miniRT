@@ -6,7 +6,7 @@
 /*   By: Xiaojing <Xiaojing@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/09 11:46:42 by Xiaojing      #+#    #+#                 */
-/*   Updated: 2021/04/20 11:07:33 by Xiaojing      ########   odam.nl         */
+/*   Updated: 2021/04/22 17:14:19 by xxu           ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,6 +91,7 @@ double	*normalization(double *a);
 double	dot_product(double a[3], double b[3]);
 double *vector_plus(double a[3], double b[3], double ab[3]);
 double	*vector_multi(double a[3], double b);
+double	*cross_product(double a[3], double b[3], double c[3]);
 double cal_shade(double t, t_camera *camera, t_object *object, double *dir, t_light *light);
 int		add_shade(double a, int t, int r, int g, int b);
 int		cal_return(t_object *objects, t_setting *setting, t_camera *camera, t_light *light, int x, int y);

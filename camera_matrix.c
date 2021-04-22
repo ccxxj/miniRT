@@ -6,7 +6,7 @@
 /*   By: Xiaojing <Xiaojing@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/15 13:45:33 by Xiaojing      #+#    #+#                 */
-/*   Updated: 2021/04/22 10:18:53 by Xiaojing      ########   odam.nl         */
+/*   Updated: 2021/04/22 16:29:42 by xxu           ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,18 +66,14 @@ int		cal_return(t_object *objects, t_setting *setting, t_camera *camera, t_light
 		if (head->type[0] == 's' && head->type[1] == 'p')
 		{
 			// printf("check 2\n");
-			t_temp = cal_sp_intersect(camera->coordinates, objects->center, pri_ray, objects->diameter[0]);
+			t_temp = cal_sp_intersect(camera->coordinates, head->center, pri_ray, head->diameter[0]);
 			// printf("t temp is %f\n", t_temp);
 			if (t_temp > 0 && t_temp < t_min)//how to treat t=0? when the intersection is on camera
 			{
 				shade = cal_shade(t_temp, camera, head, pri_ray, light);
-				// shade = cal_shade(t_temp, camera, objects, pri_ray, light);
 				if (shade != -1)
 				{
 					t_min = t_temp;
-					// r = objects->rgb[0];
-					// g = objects->rgb[1];
-					// b = objects->rgb[2];
 					r = head->rgb[0];
 					g = head->rgb[1];
 					b = head->rgb[2];
@@ -89,19 +85,21 @@ int		cal_return(t_object *objects, t_setting *setting, t_camera *camera, t_light
 				}
 			}
 		}
-		if (objects->type[0] == 'p' && objects->type[1] == 'l')//TO TEST TMR ABOUT PLANE!!!
+		if (head->type[0] == 'p' && head->type[1] == 'l')//TO TEST TMR ABOUT PLANE!!!
 		{
 			// printf("check 3\n");
-			t_temp = cal_pl_intersect(objects->coordinates_1, objects->orientation, pri_ray, camera->coordinates);
+			t_temp = cal_pl_intersect(head->center, head->orientation, pri_ray, camera->coordinates);
+			// printf("t temp is %f\n", t_temp);
 			if (t_temp > 0 && t_temp < t_min)//how to treat t=0? when the intersection is on camera
 			{
-				shade = cal_shade(t_temp, camera, objects, pri_ray, light);
+				shade = cal_shade(t_temp, camera, head, pri_ray, light);
+				// printf("shade is %f\n", shade);
 				if (shade != -1)
 				{
 					t_min = t_temp;
-					r = objects->rgb[0];
-					g = objects->rgb[1];
-					b = objects->rgb[2];
+					r = head->rgb[0];
+					g = head->rgb[1];
+					b = head->rgb[2];
 				}
 				else
 				{
@@ -118,7 +116,5 @@ int		cal_return(t_object *objects, t_setting *setting, t_camera *camera, t_light
 		color = add_shade(shade, 0, r, g, b);//to adjust t value later, currently put into 0
 	free(pri_ray);
 	return (color);
-//this need to adjust to following:
-//add different objects other than sphere
 //add ambient lighting
 }

@@ -6,7 +6,7 @@
 /*   By: xxu <xxu@student.codam.nl>                   +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/01 12:59:25 by xxu           #+#    #+#                 */
-/*   Updated: 2021/04/22 10:14:13 by Xiaojing      ########   odam.nl         */
+/*   Updated: 2021/04/22 16:29:06 by xxu           ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,39 @@ int		add_shade(double a, int t, int r, int g, int b)
 	b = a * b;
 	return (create_trgb(t, r, g, b));
 }
+
+t_object *init_object()
+{
+	t_object *head;
+	t_object *object;
+
+	object = malloc(sizeof(t_object));
+	object->type[0] = 's';
+	object->type[1] = 'p';
+	object->center[0] = 0;
+	object->center[1] = 0;
+	object->center[2] = 20;
+	object->diameter[0] = 10;
+	object->rgb[0] = 255;
+	object->rgb[1] = 0;
+	object->rgb[2] = 255;
+	head = object;
+	object = object->next;
+	object = malloc(sizeof(t_object));
+	object->type[0] = 's';
+	object->type[1] = 'p';
+	object->center[0] = -4;
+	object->center[1] = 0;
+	object->center[2] = 20;
+	object->diameter[0] = 10;
+	object->rgb[0] = 255;
+	object->rgb[1] = 0;
+	object->rgb[2] = 20;
+	// head = object;
+	object->next = NULL;
+	return (head);
+}
+
 
 int	main(int argc, char **argv)
 {
@@ -67,6 +100,8 @@ int	main(int argc, char **argv)
 		else
 			return (-1);//deal with erro message
 	}
+
+	// objects = init_object();
 	// while(objects)
 	// {
 	// 	printf("object type rgb %s %f %f %f \n", objects->type, objects->rgb[0], objects->rgb[1], objects->rgb[2]);
@@ -86,6 +121,17 @@ int	main(int argc, char **argv)
     mlx_win = mlx_new_window(mlx, setting.size[0], setting.size[1], "my first window");
     img.img = mlx_new_image(mlx, setting.size[0], setting.size[1]);
 	img.addr = mlx_get_data_addr(img.img, &img.bits_per_pixel, &img.line_length, &img.endian);
+	
+	// a = 500;
+	// b = 500;
+	// color = cal_return(objects, &setting, camera, light, a + 1, b + 1);
+	// if (color == -1)
+	// 	return (-1);
+	// my_mlx_pixel_put(&img, a, b, color);
+	
+	
+	
+	
 	while (a < setting.size[0])
 	{
 		b = 0;
@@ -111,3 +157,4 @@ int	main(int argc, char **argv)
 	// if (color == -1)
 	// 	return (-1);
 	// my_mlx_pixel_put(&img, a, b, color);
+
