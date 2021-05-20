@@ -6,15 +6,15 @@
 #    By: xxu <xxu@student.codam.nl>                   +#+                      #
 #                                                    +#+                       #
 #    Created: 2021/04/01 13:12:05 by xxu           #+#    #+#                  #
-#    Updated: 2021/04/20 11:16:08 by Xiaojing      ########   odam.nl          #
+#    Updated: 2021/05/10 19:46:59 by Xiaojing      ########   odam.nl          #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = miniRT
 OBJ =	main.o camera_matrix.o intersection.o vector_utils.o\
-		get_next_line.o get_next_line_utils.o parsing.o
+		get_next_line.o get_next_line_utils.o parsing.o cylinder.o loop.o sq_intersect.o
 	
-# OBJ = try_color.o
+# OBJ = test.o
 FLAGS = -Wall -Wextra -Werror -D BUFFER_SIZE=10
 HEADER_FILE = minirt.h
 

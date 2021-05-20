@@ -6,7 +6,7 @@
 /*   By: Xiaojing <Xiaojing@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/18 09:58:38 by Xiaojing      #+#    #+#                 */
-/*   Updated: 2021/04/22 10:08:02 by Xiaojing      ########   odam.nl         */
+/*   Updated: 2021/05/01 16:46:28 by Xiaojing      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,6 +116,7 @@ void	*initialize_objects(char *line, t_object **object)
 		line = parse_line(line + 2, new->center, 3);
 		line = parse_line(line, new->diameter, 1);
 		parse_line(line, new->rgb, 3);
+		// printf("object type rgb %s %f %f %f\n", new->type, new->rgb[0], new->rgb[1], new->rgb[2]);
 	}
 	if (line[0] == 'p' && line[1] == 'l')
 	{
@@ -123,6 +124,7 @@ void	*initialize_objects(char *line, t_object **object)
 		line = parse_line(line + 2, new->center, 3);
 		line = parse_line(line, new->orientation, 3);
 		parse_line(line, new->rgb, 3);
+		// printf("object type rgb %s %f %f %f\n", new->type, new->rgb[0], new->rgb[1], new->rgb[2]);
 	}
 	if (line[0] == 's' && line[1] == 'q')
 	{
@@ -133,7 +135,7 @@ void	*initialize_objects(char *line, t_object **object)
 	}
 	if (line[0] == 'c' && line[1] == 'y')
 	{
-		line = parse_line(line + 2, new->coordinates_1, 3);
+		line = parse_line(line + 2, new->center, 3);
 		line = parse_line(line, new->orientation, 3);
 		line = parse_line(line, new->diameter, 1);
 		line = parse_line(line, new->lenth, 1);
@@ -145,6 +147,10 @@ void	*initialize_objects(char *line, t_object **object)
 		line = parse_line(line, new->coordinates_2, 3);
 		line = parse_line(line, new->coordinates_3, 3);
 		parse_line(line, new->rgb, 3);
+		vector_dir(new->coordinates_2, new->coordinates_1, new->tri_vect1);//store the 2 vector value
+		vector_dir(new->coordinates_3, new->coordinates_1, new->tri_vect2);
+		cross_product(new->tri_vect1, new->tri_vect2, new->orientation);//store the normal (unnormalized)
+		// printf("object type rgb %s %f %f %f\n", new->type, new->rgb[0], new->rgb[1], new->rgb[2]);
 	}
 	new->next = *object;
 	*object = new;

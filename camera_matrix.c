@@ -6,7 +6,7 @@
 /*   By: Xiaojing <Xiaojing@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/15 13:45:33 by Xiaojing      #+#    #+#                 */
-/*   Updated: 2021/04/22 16:29:42 by xxu           ########   odam.nl         */
+/*   Updated: 2021/05/10 19:46:16 by Xiaojing      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,89 +32,64 @@ double	*pix_camera(double w, double h, double FOV, double x, double y, double *p
 	//return the transformed ray
 }
 
-int		cal_return(t_object *objects, t_setting *setting, t_camera *camera, t_light *light, int x, int y)
+void	exp_handle(double right[3], double up[3], double o)
 {
-	double	*pri_ray;
-	t_object *head;
-	double	t_min;
-	double	t_temp;
-	double	shade;
-	int		r;
-	int		g;
-	int		b;
-	int		color;
-
-	head = objects;
-	// t_object *head;
-	// head = objects;
-	// while (head)
-	// {
-	// 	printf("obj isssss %s\n", objects->type);
-	// 	head = head->next;
-	// }
-	pri_ray = malloc(3 * sizeof(double));
-	if (!pri_ray)
-		return (-1);//add check input NULL later
-	pri_ray = pix_camera(setting->size[0], setting->size[1], camera->fov[0], x, y, pri_ray);
-	t_min = INFINITY;
-	while (head)
+	if (o == 1)
 	{
-		//check all sphere objects
-		pri_ray = normalization(pri_ray);//when I multiply t, pri_ray got changed
-		// printf("check 1\n");
-		// if (objects->type[0] == 's' && objects->type[1] == 'p')
-		if (head->type[0] == 's' && head->type[1] == 'p')
-		{
-			// printf("check 2\n");
-			t_temp = cal_sp_intersect(camera->coordinates, head->center, pri_ray, head->diameter[0]);
-			// printf("t temp is %f\n", t_temp);
-			if (t_temp > 0 && t_temp < t_min)//how to treat t=0? when the intersection is on camera
-			{
-				shade = cal_shade(t_temp, camera, head, pri_ray, light);
-				if (shade != -1)
-				{
-					t_min = t_temp;
-					r = head->rgb[0];
-					g = head->rgb[1];
-					b = head->rgb[2];
-				}
-				else
-				{
-					free(pri_ray);
-					return (-1);
-				}
-			}
-		}
-		if (head->type[0] == 'p' && head->type[1] == 'l')//TO TEST TMR ABOUT PLANE!!!
-		{
-			// printf("check 3\n");
-			t_temp = cal_pl_intersect(head->center, head->orientation, pri_ray, camera->coordinates);
-			// printf("t temp is %f\n", t_temp);
-			if (t_temp > 0 && t_temp < t_min)//how to treat t=0? when the intersection is on camera
-			{
-				shade = cal_shade(t_temp, camera, head, pri_ray, light);
-				// printf("shade is %f\n", shade);
-				if (shade != -1)
-				{
-					t_min = t_temp;
-					r = head->rgb[0];
-					g = head->rgb[1];
-					b = head->rgb[2];
-				}
-				else
-				{
-					free(pri_ray);
-					return (-1);
-				}
-			}
-		}
-		head = head->next;
+		right[0] = 1;
+		up[2] = -1;
 	}
-	if (t_min == INFINITY)
-		color = create_trgb(0, 0, 0, 0);
 	else
-		color = add_shade(shade, 0, r, g, b);//to adjust t value later, currently put into 0
-	free(pri_ray);
-	return (color);
-//add ambient lighting
+	{
+		right[0] = -1;
+		up[2] = 1;
+	}
+	right[1] = 0;
+	right[2] = 0;
+	up[0] = 0;
+	up[1] = 0;
+}
+
+void	camera_set(t_camera *camera, t_setting *setting)
+{
+	double	half_width;
+	double	half_height;
+
+	if (camera->orientation[1] == 1 || camera->orientation[1] == -1)
+		exp_handle(camera->right, camera->up, camera->orientation[1]);//handle exception when camera look at y axis
+	else
+	{
+		camera->up[0] = 0;
+		camera->up[1] = 1;
+		camera->up[2] = 0;
+		cross_product(camera->orientation, camera->up, camera->right);//need to check exception, when the orientation is along y axis
+		normalization(camera->right);
+		cross_product(camera->right, camera->orientation, camera->up);
+		normalization(camera->up);
+	}
+	half_width = tan(camera->fov[0] / 2);
+	half_height = setting->size[1] / setting->size[0] * half_width;
+	vector_dir(camera->orientation, vector_multi(camera->up, half_height), camera->bottom_left);
+	vector_dir(camera->bottom_left, vector_multi(camera->right, half_width), camera->bottom_left);
+	vector_multi2(camera->right, 2 / setting->size[0], camera->x_unit);
+	vector_multi2(camera->up, 2 / setting->size[1], camera->y_unit);
+}
+
+double	*cast_ray(t_camera *camera, int x, int y, double *pri_ray)
+{
+	double	*x_temp;
+	double	*y_temp;
+
+	x_temp = malloc(3 * sizeof(double));
+	if (!x_temp)
+		return NULL;
+	y_temp = malloc(3 * sizeof(double));
+	if (!y_temp)
+		return NULL;
+	// pri_ray = vector_plus(camera->bottom_left, vector_multi2(camera->x_unit, x + 0.5, x_temp), pri_ray);
+	pri_ray = vector_plus(camera->bottom_left, vector_multi2(camera->x_unit, x, x_temp), pri_ray);
+	// pri_ray = vector_plus(pri_ray, vector_multi2(camera->y_unit, y - 0.5, y_temp), pri_ray);
+	pri_ray = vector_plus(pri_ray, vector_multi2(camera->y_unit, y, y_temp), pri_ray);
+	pri_ray = vector_dir(pri_ray, camera->coordinates, pri_ray);
+	return (pri_ray);
 }

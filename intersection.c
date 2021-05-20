@@ -6,14 +6,32 @@
 /*   By: Xiaojing <Xiaojing@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/09 11:39:43 by Xiaojing      #+#    #+#                 */
-/*   Updated: 2021/04/22 17:43:34 by xxu           ########   odam.nl         */
+/*   Updated: 2021/05/10 19:49:31 by Xiaojing      ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
 
+//this is to update the normal, stored in the object struct, where decide if the light will shine on the front or the backside
+void	update_normal(double p[3], double o[3], double orientation[3], double normal[3])
+{
+	double *op;
+	double dot_p;
+
+	op = malloc(3 * sizeof(double));
+	// if (!op)
+	// 	return (-1);//update error message later #updatelater
+	op = vector_dir(p, o, op);
+	dot_p = dot_product(op, orientation);
+	if (dot_p > 0)
+		normal = vector_multi2(orientation, -1, normal);
+	else
+		normal = vector_multi2(orientation, 1, normal);
+	normalization(normal);
+}
+
 //new function wrote
-double cal_sp_intersect(double o[3], double c[3], double dir[3], float r)
+double cal_sp_intersect(double o[3], double c[3], double dir[3], double r)
 {
 	double	a;
 	double	b;
@@ -47,7 +65,9 @@ double cal_sp_intersect(double o[3], double c[3], double dir[3], float r)
 		t1 = q / a;
 		t2 = cc / q;
 		free(co);
-		if (t1 > t2)
+		// printf("t1 is %f\n", t1);
+		// printf("t2 is %f\n", t2);
+		if (t1 > t2)//check later, need to deal with if 1 t is < 0 and another one bigger, inside of the object
 			return (t2);
 		else
 			return (t1);
@@ -75,44 +95,54 @@ double	cal_pl_intersect(double p0[3], double n[3], double dir[3], double o[3])
 		return (-1);
 }
 
-double cal_shade(double t, t_camera *camera, t_object *object, double *dir, t_light *light)
+double	cal_tr_intersect(t_object *object, double dir[3], double o[3])
 {
-	double	shade;
-	double	*p;
-	double	*normal;
-	double	*light_ray;
+	double	*pvec;
+	double	*qvec;
+	double	*ov0;
+	double	epsilon;
+	double	dot;
+	double	u;
+	double	v;
+	double	t;
+	double	det;
 
-	light_ray = malloc(3 * sizeof(double));
-	if (!light_ray)
+	epsilon = 0.000001;
+	dot = dot_product(dir, object->orientation);
+	if (dot > -epsilon && dot < epsilon)
+		return (-1);//p out of trianle 
+	pvec = malloc(3 * sizeof(double));
+	if (!pvec)
 		return (-1);
-	normal = malloc(3 * sizeof(double));
-	if (!normal)
+	qvec = malloc(3 * sizeof(double));
+	if (!qvec)
 		return (-1);
-	p = malloc(3 * sizeof(double));
-	if (!p)
+	ov0 = malloc(3 * sizeof(double));
+	if (!ov0)
 		return (-1);
-	// printf("dir coordi are %f %f %f \n", dir[0], dir[1], dir[2]);
-	p = vector_plus(camera->coordinates, vector_multi(dir, t), p);
-	// printf("p coordi are %f %f %f \n", p[0], p[1], p[2]);
-	light_ray = normalization(vector_dir(p, light->coordinates, light_ray));
-	// printf("light ray coordi are %f %f %f \n", light_ray[0], light_ray[1], light_ray[2]);
-	if (object->type[0] == 's' && object->type[1] == 'p')
-		normal = normalization(vector_dir(p, object->center, normal));//object center only works for sphere
-	else//this is apply for pl and sq
+	pvec = cross_product(dir, object->tri_vect2, pvec);
+	ov0 = vector_dir(o, object->coordinates_1, ov0);//should be v0 to o
+	det = dot_product(pvec, object->tri_vect1);
+	u = dot_product(pvec, ov0) / det;
+	if (u < 0 || u > 1)
 	{
-		normal[0] = object->orientation[0];
-		normal[1] = object->orientation[1];
-		normal[2] = object->orientation[2];
-		normal = normalization(normal);
+		free(pvec);
+		free(qvec);
+		free(ov0);
+		return (-1);//p out of trianle 
 	}
-	// printf("normal coordi are %f %f %f \n", normal[0], normal[1], normal[2]);
-	shade = -dot_product(light_ray, normal);
-	// printf("shade is %f \n", shade);
-	free(light_ray);
-	free(normal);
-	free(p);
-	if(shade < 0)//in the case light does not shine directly
-		return (0);
-	return (shade);
+	qvec = cross_product(ov0, object->tri_vect1, qvec);
+	v = dot_product(qvec, dir) / det;
+	if (v < 0 || u + v > 1)
+	{
+		free(pvec);
+		free(qvec);
+		free(ov0);
+		return (-1);//p out of trianle 
+	}
+	t = dot_product(qvec, object->tri_vect2) / det; //t should be >0 then this is in front of camera
+	free(pvec);
+	free(qvec);
+	free(ov0);
+	return (t);
 }
-
