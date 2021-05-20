@@ -6,11 +6,11 @@
 /*   By: xxu <xxu@student.codam.nl>                   +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/01 12:59:25 by xxu           #+#    #+#                 */
-/*   Updated: 2021/05/16 10:54:29 by Xiaojing      ########   odam.nl         */
+/*   Updated: 2021/05/20 17:58:46 by xxu           ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <mlx.h>
+// #include <mlx.h>
 #include "minirt.h"
 
 void            my_mlx_pixel_put(t_data *data, int x, int y, int color)
@@ -86,9 +86,11 @@ int	main(int argc, char **argv)
     img.img = mlx_new_image(vars.mlx, setting.size[0], setting.size[1]);
 	img.addr = mlx_get_data_addr(img.img, &img.bits_per_pixel, &img.line_length, &img.endian);
 	
-	// a = 249;
-	// b = 249;
-	// color = cal_return(objects, camera, light, a + 1, b + 1);
+	// a = 540;
+	// b = 460;
+	// setting.pix[0] = a;
+	// setting.pix[1] = setting.size[1] - b;
+	// color = cal_return(objects, camera, light, &setting);
 	// if (color == -1)
 	// 	return (-1);
 	// my_mlx_pixel_put(&img, a, b, color);
@@ -99,7 +101,9 @@ int	main(int argc, char **argv)
 		while (b < setting.size[1])
 		{
 			// color = cal_return(objects, &setting, camera, light, a + 1, b + 1);
-			color = cal_return(objects, camera, light, a, setting.size[1] - b);
+			setting.pix[0] = a;
+			setting.pix[1] = setting.size[1] - b;
+			color = cal_return(objects, camera, light, &setting);
 			if (color == -1)//this is the problem when my window gets bigger, the return is -1
 				return (-1);                   
 			my_mlx_pixel_put(&img, a, b, color);

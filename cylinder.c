@@ -6,7 +6,7 @@
 /*   By: Xiaojing <Xiaojing@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/05/01 16:44:22 by Xiaojing      #+#    #+#                 */
-/*   Updated: 2021/05/16 10:54:10 by Xiaojing      ########   odam.nl         */
+/*   Updated: 2021/05/20 17:57:00 by xxu           ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ double	cal_top_intersect(t_object *object, double dir[3], double o[3])
 	t = cal_pl_intersect(top, normalization(object->orientation), dir, o);
 	if (t > 0)
 	{
-		p = vector_plus(o, vector_multi(dir, t), p);
+		p = vector_plus(o, vector_multi2(dir, t, p), p);//changed frm vector_multi(dir, t)
 		p = vector_dir(top, p, p);
 		if (dot_product(p, p) <= object->diameter[0] * object->diameter[0])
 			object->tri_vect2[0] = t;
@@ -66,7 +66,8 @@ double	cal_bottom_intersect(t_object *object, double dir[3], double o[3])
 	t = cal_pl_intersect(bottom, normalization(object->orientation), dir, o);
 	if (t > 0)
 	{
-		p = vector_plus(o, vector_multi(dir, t), p);
+		// p = vector_plus(o, vector_multi(dir, t), p);
+		p = vector_plus(o, vector_multi2(dir, t, p), p);
 		p = vector_dir(bottom, p, p);
 		if (dot_product(p, p) <= object->diameter[0] * object->diameter[0])
 			object->tri_vect2[1] = t;

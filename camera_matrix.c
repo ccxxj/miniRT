@@ -6,31 +6,11 @@
 /*   By: Xiaojing <Xiaojing@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/15 13:45:33 by Xiaojing      #+#    #+#                 */
-/*   Updated: 2021/05/10 19:46:16 by Xiaojing      ########   odam.nl         */
+/*   Updated: 2021/05/20 15:11:51 by xxu           ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minirt.h"
-
-//return the primary ray
-// double	*pix_camera(int w, int h, double FOV, int x, int y)
-double	*pix_camera(double w, double h, double FOV, double x, double y, double *pri_ray)
-{
-	double	Px;
-	double	Py;
-
-	Px = ((2 * x - 1) / w - 1) * tan(FOV / 2 * M_PI / 180);
-	double tang = tan(FOV / 2 * M_PI / 180);
-	double py1 = (h + 1 - 2 * y) / w;
-	Py = py1 * tang;
-	pri_ray[0] = Px;
-	pri_ray[1] = Py;
-	
-	pri_ray[2] = 1; // is this 1 or -1?? check later
-	return (pri_ray);
-
-	//return the transformed ray
-}
 
 void	exp_handle(double right[3], double up[3], double o)
 {
@@ -86,9 +66,7 @@ double	*cast_ray(t_camera *camera, int x, int y, double *pri_ray)
 	y_temp = malloc(3 * sizeof(double));
 	if (!y_temp)
 		return NULL;
-	// pri_ray = vector_plus(camera->bottom_left, vector_multi2(camera->x_unit, x + 0.5, x_temp), pri_ray);
 	pri_ray = vector_plus(camera->bottom_left, vector_multi2(camera->x_unit, x, x_temp), pri_ray);
-	// pri_ray = vector_plus(pri_ray, vector_multi2(camera->y_unit, y - 0.5, y_temp), pri_ray);
 	pri_ray = vector_plus(pri_ray, vector_multi2(camera->y_unit, y, y_temp), pri_ray);
 	pri_ray = vector_dir(pri_ray, camera->coordinates, pri_ray);
 	return (pri_ray);

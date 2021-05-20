@@ -6,13 +6,13 @@
 #    By: xxu <xxu@student.codam.nl>                   +#+                      #
 #                                                    +#+                       #
 #    Created: 2021/04/01 13:12:05 by xxu           #+#    #+#                  #
-#    Updated: 2021/05/10 19:46:59 by Xiaojing      ########   odam.nl          #
+#    Updated: 2021/05/20 16:24:39 by xxu           ########   odam.nl          #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = miniRT
 OBJ =	main.o camera_matrix.o intersection.o vector_utils.o\
-		get_next_line.o get_next_line_utils.o parsing.o cylinder.o loop.o sq_intersect.o
+		get_next_line.o get_next_line_utils.o parsing.o cylinder.o loop.o sq_intersect.o light.o
 	
 # OBJ = test.o
 FLAGS = -Wall -Wextra -Werror -D BUFFER_SIZE=10

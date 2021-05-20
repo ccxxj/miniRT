@@ -6,7 +6,7 @@
 /*   By: Xiaojing <Xiaojing@student.codam.nl>         +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/04/09 11:46:42 by Xiaojing      #+#    #+#                 */
-/*   Updated: 2021/05/15 22:08:28 by Xiaojing      ########   odam.nl         */
+/*   Updated: 2021/05/20 16:24:57 by xxu           ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,8 @@
 #include <stdio.h>//to remove later
 #include <stdlib.h>
 #include <fcntl.h>
-# include <stddef.h>
+#include <stddef.h>
+#include <mlx.h>
 
 typedef struct  s_data {
     void        *img;
@@ -34,14 +35,11 @@ typedef struct  s_vars {
 
 
 typedef struct  s_setting {
-	// double	width;
-	// double	height;
+
 	double	size[2];
 	double	lighting_r[1];
-	// int		r;
-	// int		g;
-	// int		b;
 	double		rgb[3];
+	double	pix[2];
 }               t_setting;
 
 typedef struct  s_camera {
@@ -102,6 +100,10 @@ typedef struct		s_result
 	double	rgb[3];
 	double	p[3];
 	double	normal[3];
+	double ambient[3];
+	double diffuse[3];
+	double specular[3];
+	double intensity[3];
 }					t_result;
 
 
@@ -120,7 +122,8 @@ double	*vector_multi2(double a[3], double b, double c[3]);
 void	cal_shade(t_result *result, double light_ray[3]);
 int		add_shade(double a, int t, int r, int g, int b);
 // int		cal_return(t_object *objects, t_setting *setting, t_camera *camera, t_light *light, int x, int y);
-int		cal_return(t_object *objects, t_camera *camera, t_light *light, int x, int y);
+// int		cal_return(t_object *objects, t_camera *camera, t_light *light, int x, int y);
+int		cal_return(t_object *objects, t_camera *camera, t_light *light, t_setting *setting);
 int		create_trgb(int t, int r, int g, int b);
 double cal_sp_intersect(double o[3], double c[3], double dir[3], double r);
 double	cal_pl_intersect(double p0[3], double n[3], double dir[3], double o[3]);
@@ -148,5 +151,10 @@ double	*cast_ray(t_camera *camera, int x, int y, double *pri_ray);
 //square
 void	process_square(t_object *object);
 int		check_sq_intersect(double t, t_object *object, double dir[3], double o[3]);
+
+//light
+void transfer_rgb(double *rgb, double *intensity, double ratio);
+void final_intensity(t_result *result);
+int		cal_color(double intensity[3], int t, int r, int g, int b);
 
 #endif
